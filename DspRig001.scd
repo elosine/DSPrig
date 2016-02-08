@@ -104,10 +104,5 @@ s.waitForBoot{
 	}//end fork
 }// end waitForBoot
 )
-~eb = SoundFile.collectIntoBuffers("/Users/jyang/GitHub/DSPrig/grainEnv/*");
-
-s.sendMsg( \n_set, 7000, \rcrv, 12, \dcrv, 2, \minrateL, 0.2, \minrateH, 0.5, \maxrateL, 21, \maxrateH, 33,\mindurL, 0.03, \mindurH, 0.1, \maxdurL, 0.3, \maxdurH, 0.7, \ebf, ~eb[3].bufnum);
-
-
 
 

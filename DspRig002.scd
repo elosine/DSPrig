@@ -7,7 +7,7 @@ s.waitForBoot{
 		var nb = 15;
 		////Busses
 		var kbs = {Bus.control(s)}!nb;
-		var nkbs = {Bus.control(s)}!nb;
+		var normkbs = {Bus.control(s)}!nb;
 		var abs = {Bus.audio(s)}!nb;
 		var fxabs = {Bus.audio(s)}!nb;
 		////Arduino
@@ -20,8 +20,8 @@ s.waitForBoot{
 		var envbuf = SoundFile.collectIntoBuffers("/Users/jyang/GitHub/DSPrig/grainEnv/*");
 		////Data
 		var hdr = ["fsr0", "fsr1"];
-		var inlohi = [ [35,900], [80,900] ];
-		var crv = [20, 1];
+		var inlohi = [ [250,900], [80,900] ];
+		var crv = [11, 1];
 		var outlohi = [ [0.0,1.0], [13.0,(1/3)]  ];
 
 		//SETUP//////////////////////////////////////////
@@ -37,6 +37,7 @@ s.waitForBoot{
 					var vcrv = pow(vnorm, crv[ix]);
 					var val = vcrv.linlin(0.0, 1.0, outlohi[ix][0], outlohi[ix][1]);
 					//if(ix==1,{val.postln});
+					normkbs[ix].setSynchronous(vnorm);
 					kbs[ix].setSynchronous(val);
 				});
 			};
@@ -81,11 +82,22 @@ s.waitForBoot{
 			minrate = TRand.kr(minrateL, minrateH, mtrig);
 			maxrate = TRand.kr(maxrateL, maxrateH, mtrig);
 			dur = pow( TRand.kr( 0.0, 1.0, mtrig), dcrv ).linlin(0.0, 1.0, mindur, maxdur);
-			gtr = Impulse.kr( pow( TRand.kr( 0.0, 1.0, mtrig), rcrv ).linlin(0.0, 1.0, minrate, maxrate).poll );
+			gtr = Impulse.kr( pow( TRand.kr( 0.0, 1.0, mtrig), rcrv ).linlin(0.0, 1.0, minrate, maxrate));
 			sig = In.ar(ibs);
 			sig = GrainIn.ar(1, gtr,dur,sig,pan,ebf);
 			Out.ar(1, sig*amp);
 		}).add;
+		//OSC DEFS///////////////////////////////////////////////////
+		////Send Control Bus Value to Processing
+		OSCdef(\sendkval, {
+			arg msg;
+			var ip = msg[1].asString;
+			var port = msg[2].asInteger;
+			var netadr = NetAddr(ip, port);
+			var bus = msg[3].asInteger;
+			var val = normkbs[bus].getSynchronous.asFloat;
+			netadr.sendMsg("/kval", bus, val);
+		}, "/getkval" );
 		0.2.wait;
 		//START SYNTHS///////////////////////////////////////////////
 		////Sample Player Synth
@@ -104,10 +116,5 @@ s.waitForBoot{
 	}//end fork
 }// end waitForBoot
 )
-~eb = SoundFile.collectIntoBuffers("/Users/jyang/GitHub/DSPrig/grainEnv/*");
-
-s.sendMsg( \n_set, 7000, \rcrv, 12, \dcrv, 2, \minrateL, 0.2, \minrateH, 0.5, \maxrateL, 21, \maxrateH, 33,\mindurL, 0.03, \mindurH, 0.1, \maxdurL, 0.3, \maxdurH, 0.7, \ebf, ~eb[3].bufnum);
-
-
 
 

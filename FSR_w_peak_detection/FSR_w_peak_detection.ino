@@ -1,9 +1,9 @@
-int nfsrs = 1;
-int fsr[] = {A3};
-int val[1];
-int thresh[] = {350};
-boolean peakgate[] = {true};
-int pval[1] ;
+int nfsrs = 2;
+int fsr[] = {A3, A1};
+int val[2];
+int thresh[] = {250, 250};
+boolean peakgate[] = {true, true};
+int pval[2] ;
 
 void setup() {
   Serial.begin(9600);
@@ -37,7 +37,7 @@ void loop() {
       }
     }
   }//end for(int i=0;i<nfsrs;i++)
-  delay(5);
+  delay(15);
 }//end loop
 
 
