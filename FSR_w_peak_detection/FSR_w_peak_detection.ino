@@ -1,8 +1,8 @@
 int nfsrs = 2;
-int fsr[] = {A3, A1};
+int fsr[] = {A0,A1};
 int val[2];
-int thresh[] = {250, 250};
-boolean peakgate[] = {true, true};
+int thresh[] = {50,50};
+boolean peakgate[] = {true,true};
 int pval[2] ;
 
 void setup() {
@@ -23,8 +23,8 @@ void loop() {
       }//
       else { // if no longer going up, you have found a peak
         if (peakgate[i]) { //gate so only one peak gets through
-          Serial.print("fsrpk" + String(i) + ":"); //send out peak
-          Serial.println(val[i], DEC);
+       //   Serial.print("fsrpk" + String(i) + ":"); //send out peak
+       //   Serial.println(val[i], DEC);
           peakgate[i] = false; //close gate so only one peak gets through
         }
       }
@@ -32,8 +32,8 @@ void loop() {
     if (val[i] < thresh[i]) {//if fsr val falls below threshold, then reset peak gate to look for next peak
       if (peakgate[i] == false) {//so more than one value does not come through
         peakgate[i] = true;
-        Serial.print("fsrpk" + String(i) + ":"); //send out peak
-        Serial.println(0);
+      //  Serial.print("fsrpk" + String(i) + ":"); //send out peak
+      //  Serial.println(0);
       }
     }
   }//end for(int i=0;i<nfsrs;i++)
